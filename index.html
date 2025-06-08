@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Emoji Tic Tac Toe</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(to right, #0f0c29, #302b63, #24243e);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: #00ff99;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      font-size: 36px;
+      color: #ffffff;
+      text-shadow: 1px 1px 3px #00ff99;
+    }
+
+    .status {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-gap: 10px;
+    }
+
+    .cell {
+      width: 100px;
+      height: 100px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid #00ff99;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      cursor: pointer;
+      transition: background 0.3s;
+      border-radius: 10px;
+    }
+
+    .cell:hover {
+      background: rgba(0, 255, 153, 0.1);
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #00ff99;
+      color: #000;
+      border: none;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #33ffbb;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Emoji Tic Tac Toe</h1>
+  <div class="status" id="status">Turn: 🟢 Player 1</div>
+
+  <div class="board" id="board"></div>
+
+  <button onclick="resetGame()">Restart</button>
+
+  <script>
+    const board = Array(9).fill(null);
+    let currentPlayer = "Player1"; // Player1 = 🟢, Player2 = ❌
+    const statusText = document.getElementById("status");
+    const boardContainer = document.getElementById("board");
+
+    const icons = {
+      Player1: "🟢",
+      Player2: "❌"
+    };
+
+    function drawBoard() {
+      boardContainer.innerHTML = "";
+      board.forEach((cell, index) => {
+        const div = document.createElement("div");
+        div.className = "cell";
+        div.innerText = cell ? icons[cell] : "";
+        div.addEventListener("click", () => makeMove(index));
+        boardContainer.appendChild(div);
+      });
+    }
+
+    function makeMove(index) {
+      if (board[index] || checkWinner() || isDraw()) return;
+
+      board[index] = currentPlayer;
+      drawBoard();
+
+      if (checkWinner()) {
+        setTimeout(() => {
+          alert(`${icons[currentPlayer]} ${currentPlayer} wins! 🎉`);
+        }, 100);
+        statusText.innerText = `${icons[currentPlayer]} ${currentPlayer} wins!`;
+        return;
+      }
+
+      if (isDraw()) {
+        setTimeout(() => alert("It's a Draw 😐"), 100);
+        statusText.innerText = "It's a Draw 😐";
+        return;
+      }
+
+      currentPlayer = currentPlayer === "Player1" ? "Player2" : "Player1";
+      statusText.innerText = `Turn: ${icons[currentPlayer]} ${currentPlayer}`;
+    }
+
+    function checkWinner() {
+      const wins = [
+        [0,1,2], [3,4,5], [6,7,8],
+        [0,3,6], [1,4,7], [2,5,8],
+        [0,4,8], [2,4,6]
+      ];
+      return wins.some(combo => {
+        const [a, b, c] = combo;
+        return board[a] && board[a] === board[b] && board[b] === board[c];
+      });
+    }
+
+    function isDraw() {
+      return board.every(cell => cell !== null);
+    }
+
+    function resetGame() {
+      for (let i = 0; i < 9; i++) board[i] = null;
+      currentPlayer = "Player1";
+      statusText.innerText = `Turn: ${icons[currentPlayer]} ${currentPlayer}`;
+      drawBoard();
+    }
+
+    drawBoard();
+  </script>
+
+</body>
+</html>
